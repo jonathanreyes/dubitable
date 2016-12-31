@@ -116,7 +116,7 @@ dubitableDomains['rilenews.com'] = [1,4];
 dubitableDomains['satiratribune.com'] = [];
 dubitableDomains['sprotspickle.com'] = [4];
 dubitableDomains['theblaze.com'] = [];
-dubitableDomains['borowitz-report'] = [4]; //TODO JSR: special search, since this is a section of the New Yorker
+dubitableDomains['borowitz-report'] = [4];
 dubitableDomains['theonion.com'] = [4];
 dubitableDomains['other98.com'] = [4];
 // dubitableDomains['thereporterz'] = []; //TODO JSR: what's the correct domain here?
@@ -160,47 +160,64 @@ function extractDomain(url) {
   return domain.toLowerCase();
 }
 
+function buildAlert(tabDomain, categories) {
+  var alertString = tabDomain + " is dubitable!\n";
+  
+  if (dubitableDomains[domain].includes(1)) {
+    alertString += "CATEGORY 1: Fake, false, or regularly misleading sites that rely on \"outrage\" by using distored headlines and decontextualized or dubious information.\n"
+  }
+
+  if (dubitableDomains[domain].includes(2)) {
+    alertString += "CATEGORY 2: Circulates misleading and/or potentially unreliable information or presents opinion pieces as news.\n";
+  }
+
+  if (dubitableDomains[domain].includes(3)) {
+    alertString += "CATEGORY 3: Uses hyperbolic or clickbait-y headlines and/or social media descriptions, but may ohterwise circulate reliable and/or verifiable information.\n"
+  }
+
+  if (dubitableDomains[domain].includes(4)) {
+    alertString += "CATEGORY 4: Purposefully fake with the intent of satire/comedy.\n";
+  }
+
+  if (dubitableDomains[domain].length == 0) {
+    alertString += "Uncategorized, but be wary!\n";
+  }
+
+  alert(alertString);
+}
+
 //function to find if tab's url is in dubitableDomains
 function searchForTabUrlInDubitableDomains(tabDomain) {
   for (domain in dubitableDomains) {
-
     if (tabDomain.includes(domain)) {
       //this tab is open to a dubitable domain, alert the user
-      var alertString = "The domain " + tabDomain + " is dubitable.\n";
-      
-      if (dubitableDomains[domain].includes(1)) {
-        alertString += "CATEGORY 1: Fake, false, or regularly misleading sites that rely on \"outrage\" by using distored headlines and decontextualized or dubious information.\n"
-      }
-
-      if (dubitableDomains[domain].includes(2)) {
-        alertString += "CATEGORY 2: Circulates misleading and/or potentially unreliable information or presents opinion pieces as news.\n";
-      }
-
-      if (dubitableDomains[domain].includes(3)) {
-        alertString += "CATEGORY 3: Uses hyperbolic or clickbait-y headlines and/or social media descriptions, but may ohterwise circulate reliable and/or verifiable information.\n"
-      }
-
-      if (dubitableDomains[domain].includes(4)) {
-        alertString += "CATEGORY 4: Purposefully fake with the intent of satire/comedy.\n";
-      }
-
-      if (dubitableDomains[domain].length == 0) {
-        alertString += "Uncategorized, but be wary!\n";
-      }
-
-      alert(alertString);
+      buildAlert(domain, dubitableDomains[domain]);
     }
   }
 }
 
+function specialChecks(tabDomain, fullUrl) {
+  //TODO JSR: provide warnings on facebook pages
+  if (tabDomain.includes("facebook.com")) {
+    ;
+  } else if (tabDomain.includes("newyorker.com")) {
+    if (fullUrl.includes("borowitz-report")) {
+      buildAlert("The New Yorker's Borowitz Report", dubitableDomains["borowitz-report"]);
+    }
+  }
+}
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.hasOwnProperty('url')) {
     //get domain from the tab's new URL
     var tabDomain = extractDomain(changeInfo.url);
+    var categories = [];
 
     //check domain against list of dubitable domains
     searchForTabUrlInDubitableDomains(tabDomain);
+
+    ///TODO JSR: finish implementing special searches
+    specialChecks(tabDomain, changeInfo.url);
   }
 });
 
