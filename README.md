@@ -14,6 +14,9 @@ Baseline functionality. Creates an alert window with the site's associated categ
 * Replace dubitableDomains map with a database
   * Extension itself becomes more lightweight
   * Easier to update as more dubitable sites are found & classified
+* Apply loose rules from the source material
+  * e.g. provide a warning when domain ends in ".com.co"
+* Figure out how to get extension working on dubitable facebook pages
 
 ## Credits: <br /> ##
 I took the list of dubitable sites and their classifications from Melissa Zimdars' PDF [here](https://d279m997dpfwgl.cloudfront.net/wp/2016/11/Resource-False-Misleading-Clickbait-y-and-Satirical-“News”-Sources-1.pdf).
