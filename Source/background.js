@@ -1,7 +1,6 @@
 //dubitableDomains is a map of domains to categories
 //domains must be all lower case!
 //categories are integers from 1 to 4
-//Source: https://d279m997dpfwgl.cloudfront.net/wp/2016/11/Resource-False-Misleading-Clickbait-y-and-Satirical-“News”-Sources-1.pdf
 var dubitableDomains = new Object();
 dubitableDomains['100percentfedup.com'] = [2,3];
 dubitableDomains['21stcenturywire.com'] = [2,3];
@@ -144,7 +143,6 @@ dubitableDomains['worldtruth.tv'] = [];
 dubitableDomains['zerohedge.com'] = [];
 
 //funcion to extract domain from a url string 
-//credit: https://stackoverflow.com/questions/8498592/extract-root-domain-name-from-string
 function extractDomain(url) {
   var domain;
   
@@ -165,7 +163,6 @@ function extractDomain(url) {
 //function to find if tab's url is in dubitableDomains
 function searchForTabUrlInDubitableDomains(tabDomain) {
   for (domain in dubitableDomains) {
-    // alert(domain + "--" + tabDomain) + " -- " + tabDomain.includes(domain);
 
     if (tabDomain.includes(domain)) {
       //this tab is open to a dubitable domain, alert the user
@@ -201,8 +198,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.hasOwnProperty('url')) {
     //get domain from the tab's new URL
     var tabDomain = extractDomain(changeInfo.url);
-
-    // alert("Tab Domain: " + tabDomain);
 
     //check domain against list of dubitable domains
     searchForTabUrlInDubitableDomains(tabDomain);
