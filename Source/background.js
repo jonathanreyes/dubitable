@@ -161,40 +161,13 @@ function extractDomain(url) {
   return domain.toLowerCase();
 }
 
-// function buildAlert(tabDomain, categories) {
-//   var alertString = tabDomain + " is dubitable!\n";
-  
-//   if (dubitableDomains[domain].includes(1)) {
-//     alertString += "CATEGORY 1: Fake, false, or regularly misleading sites that rely on \"outrage\" by using distored headlines and decontextualized or dubious information.\n"
-//   }
-
-//   if (dubitableDomains[domain].includes(2)) {
-//     alertString += "CATEGORY 2: Circulates misleading and/or potentially unreliable information or presents opinion pieces as news.\n";
-//   }
-
-//   if (dubitableDomains[domain].includes(3)) {
-//     alertString += "CATEGORY 3: Uses hyperbolic or clickbait-y headlines and/or social media descriptions, but may ohterwise circulate reliable and/or verifiable information.\n"
-//   }
-
-//   if (dubitableDomains[domain].includes(4)) {
-//     alertString += "CATEGORY 4: Purposefully fake with the intent of satire/comedy.\n";
-//   }
-
-//   if (dubitableDomains[domain].length == 0) {
-//     alertString += "Uncategorized, but be wary!\n";
-//   }
-
-//   alert(alertString);
-// }
-
-function buildAlert(domain) {
+function buildDubitableAlert(domain) {
   var alertString = domain + " is dubitable!\n";
+  alertString += "This domain has been tagged as " + dubitableDomains[domain]["type"] + ".\n";
 
-  // alertString += "This website is tagged as " + dubitableDomains[domain].type + "\n";
-
-  // if (dubitableDomains[domain].notes.length > 0) {
-  //   alertString += "Notes: " + dubitableDomains[domain].notes;
-  // }
+  if (dubitableDomains[domain]["notes"].length > 0) {
+    alertString += "Notes: " + dubitableDomains[domain]["notes"];
+  }
 
   alert(alertString);
 }
@@ -204,9 +177,8 @@ function searchForTabUrlInDubitableDomains(tabDomain) {
   for (domain in dubitableDomains) {
     if (tabDomain.includes(domain.toLowerCase())) {
       //this tab is open to a dubitable domain, alert the user
-      // buildAlert(domain, dubitableDomains[domain]);
-      alert("domain: " + domain + " tabDomain: " +tabDomain);
-      buildAlert(domain);
+      // buildDubitableAlert(domain, dubitableDomains[domain]);
+      buildDubitableAlert(domain);
     }
   }
 }
@@ -217,7 +189,7 @@ function specialChecks(tabDomain, fullUrl) {
     ;
   } else if (tabDomain.includes("newyorker.com")) {
     if (fullUrl.includes("borowitz-report")) {
-      buildAlert("The New Yorker's Borowitz Report", dubitableDomains["borowitz-report"]);
+      buildDubitableAlert("The New Yorker's Borowitz Report", dubitableDomains["borowitz-report"]);
     }
   }
 }
@@ -243,7 +215,6 @@ fetch(nonCredibleSourcesURL, {method: 'GET'})
 }).then(function (j) {
   // alert(JSON.stringify(j));
   dubitableDomains = j;
-  alert(Object.keys(dubitableDomains));
 });
 
 //pull the latest set of credible sources from OpenSources and save if in credibleDomains
