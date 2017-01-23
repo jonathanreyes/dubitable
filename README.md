@@ -15,9 +15,7 @@ Started to implement special searches for pages like the Borowitz Report
   * When icon is red (dubitable site visited), user can click it to open options window
   * Options window will highlight color-coded dubitability categories and a summarizing title
   * User can click/hover to see explanation of each category
-* Replace dubitableDomains map with a database
-  * Extension itself becomes more lightweight
-  * Easier to update as more dubitable sites are found & classified
+* Figure out a way to pull new credible/dubitable domains list from opensources.co GitHub to keep our list synced
 * Apply loose rules from the source material
   * e.g. provide a warning when domain ends in ".com.co"
 * Figure out how to get extension working on dubitable facebook pages
