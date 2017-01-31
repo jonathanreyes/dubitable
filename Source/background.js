@@ -3,6 +3,7 @@
 //categories are integers from 1 to 4
 var dubitableDomains = new Object();
 var credibleDomains = new Object();
+var alertString = "";
 
 //funcion to extract domain from a url string 
 function extractDomain(url) {
@@ -23,25 +24,29 @@ function extractDomain(url) {
 }
 
 function buildDubitableAlert(domain) {
-  var alertString = domain + " is dubitable!\n";
+  alertString = domain + " is dubitable!\n";
   alertString += "This domain has been tagged as " + dubitableDomains[domain]["type"] + ".\n";
 
   if (dubitableDomains[domain]["notes"].length > 0) {
     alertString += "Notes: " + dubitableDomains[domain]["notes"];
   }
-
-  // alert(alertString);
-  chrome.storage.local.set({"popupText": alertString});
 }
 
 //function to find if tab's url is in dubitableDomains
 function searchForTabUrlInDubitableDomains(tabDomain) {
+  var tabDomainIsDubitable = false;
+
   for (domain in dubitableDomains) {
     if (tabDomain.includes(domain.toLowerCase())) {
       //this tab is open to a dubitable domain, alert the user
-      // buildDubitableAlert(domain, dubitableDomains[domain]);
+      chrome.browserAction.setIcon({path: "icons/redD.png"});
       buildDubitableAlert(domain);
+      tabDomainIsDubitable = true;
     }
+  }
+
+  if (tabDomainIsDubitable === false) {
+    chrome.browserAction.setIcon({path: "icons/greenD.png"});
   }
 }
 
@@ -58,6 +63,9 @@ function specialChecks(tabDomain, fullUrl) {
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.hasOwnProperty('url')) {
+    alertString = "";
+    chrome.browserAction.setIcon({path: "icons/greenD.png"});
+
     //get domain from the tab's new URL
     var tabDomain = extractDomain(changeInfo.url);
 
@@ -87,5 +95,11 @@ fetch(credibleSourcesURL, {method: 'GET'})
 }).then(function (j) {
   // alert(JSON.stringify(j));
   credibleDomains = j;
+});
+
+chrome.runtime.onMessage.addListener(function(message,sender, sendResponse) {
+  chrome.runtime.sendMessage({data: alertString}, function(response) {
+    return;
+  });
 });
 

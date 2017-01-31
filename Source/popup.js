@@ -1,8 +1,7 @@
-chrome.storage.onChanged.addListener(function (changes, areaName) {
-  alert("onChanged Fired");
-  if (areaName === "local") {
-    if (changes["popupText"]) {
-      document.getElementById("alertParagraph").innerHTML = changes["popupText"];
-    }
-  }
+chrome.runtime.sendMessage({request: "Handshake"}, function(response) {
+  return;
+});
+
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
+  document.getElementById('alertParagraph').innerHTML = message.data;
 });
