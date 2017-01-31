@@ -1,8 +1,13 @@
-//dubitableDomains is a map of domains to categories
-//domains must be all lower case!
-//categories are integers from 1 to 4
 var dubitableDomains = new Object();
 var credibleDomains = new Object();
+
+chrome.storage.sync.get("dubitableDomains", function(data) {
+  dubitableDomains = data["dubitableDomains"];
+});
+
+chrome.storage.sync.get("credibleDomains", function(data) {
+  credibleDomains = data["credibleDomains"];
+});
 
 //funcion to extract domain from a url string 
 function extractDomain(url) {
@@ -31,7 +36,10 @@ function buildDubitableAlert(domain) {
   }
 
   // alert(alertString);
-  chrome.storage.local.set({"popupText": alertString});
+  // chrome.browserAction.getPopup({}, function(popupURL) {
+      popupURL.getElementById('alertParagraph').value = alertString;
+  //   }
+  // );
 }
 
 //function to find if tab's url is in dubitableDomains
@@ -68,24 +76,3 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     // specialChecks(tabDomain, changeInfo.url);
   }
 });
-
-//pull the latest set of noncredible sources from OpenSources and save it in dubitableDomains
-var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
-fetch(nonCredibleSourcesURL, {method: 'GET'})
-.then(function (response) {
-  return response.json();
-}).then(function (j) {
-  // alert(JSON.stringify(j));
-  dubitableDomains = j;
-});
-
-//pull the latest set of credible sources from OpenSources and save if in credibleDomains
-var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
-fetch(credibleSourcesURL, {method: 'GET'})
-.then(function (response) {
-  return response.json();
-}).then(function (j) {
-  // alert(JSON.stringify(j));
-  credibleDomains = j;
-});
-
