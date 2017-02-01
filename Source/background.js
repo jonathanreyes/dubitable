@@ -8,6 +8,7 @@ var dubitableDomains = new Object();
 var credibleDomains = new Object();
 var untaggedAlertString = "This site hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
 var alertString = "";
+var startpageURL = "chrome://startpage/";
 
 //Paths for D Icons
 var greenDPath = "icons/greenD.png";
@@ -112,23 +113,25 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.hasOwnProperty('url')) {
     resetIconAndAlertString();
 
-    //get domain from the tab's new URL
-    var tabDomain = extractDomain(changeInfo.url);
+    if (!changeInfo.url.includes(startpageURL)) {
+      //get domain from the tab's new URL
+      var tabDomain = extractDomain(changeInfo.url);
 
-    //check domain against list of dubitable domains
-    var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
+      //check domain against list of dubitable domains
+      var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
 
-    if (!domainFoundInList) {
-      domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
-    }
+      if (!domainFoundInList) {
+        domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
+      }
 
-    ///TODO JSR: finish implementing special searches
-    // specialChecks(tabDomain, changeInfo.url);
+      ///TODO JSR: finish implementing special searches
+      // specialChecks(tabDomain, changeInfo.url);
 
-    if (!domainFoundInList) {
-      //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
-      chrome.browserAction.setIcon({path: yellowDPath});
-      alertString = untaggedAlertString;
+      if (!domainFoundInList) {
+        //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
+        chrome.browserAction.setIcon({path: yellowDPath});
+        alertString = untaggedAlertString;
+      }
     }
   }
 });
@@ -138,12 +141,32 @@ chrome.tabs.onCreated.addListener(function (tab) {
   //no need to check the domain, since the URL may not be set yet
 });
 
+//TODO JSR body of this and onUpdated listener can be abstracted into helper function?
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function(tab) {
     resetIconAndAlertString();
+
     if (tab.hasOwnProperty('url')) {
-      var tabDomain = extractDomain(tab.url);
-      searchForTabUrlInDubitableDomains(tabDomain);
+      if (!tab.url.includes(startpageURL)) {
+        //get domain from the tab's new URL
+        var tabDomain = extractDomain(tab.url);
+
+        //check domain against list of dubitable domains
+        var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
+
+        if (!domainFoundInList) {
+          domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
+        }
+
+        ///TODO JSR: finish implementing special searches
+        // specialChecks(tabDomain, changeInfo.url);
+
+        if (!domainFoundInList) {
+          //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
+          chrome.browserAction.setIcon({path: yellowDPath});
+          alertString = untaggedAlertString;
+        }
+      }
     }
   });
 })
