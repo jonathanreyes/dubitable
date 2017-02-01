@@ -9,11 +9,11 @@ Baseline functionality. Creates an alert window with the site's associated categ
 Started to implement special searches for pages like the Borowitz Report
 
 ### v0.6: <br />
-Added the 'D' Icon:
-  -Turns green when page is credible
-  -Turns red when page is dubitable
-  -Turns yellow when page has not been categorized as credible or dubitable
-  -Turns grey on new tab startpages
+Added the 'D' Icon: <br />
+  -Turns green when page is credible <br />
+  -Turns red when page is dubitable <br />
+  -Turns yellow when page has not been categorized as credible or dubitable <br />
+  -Turns grey on new tab startpages <br />
 
 ## To-Do's: <br />
 * Create an icon
