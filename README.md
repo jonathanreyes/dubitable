@@ -1,5 +1,12 @@
 # dubitable
-Opera/Chrome extension that provides a warning when the user visits a site that provides fake, misleading, or primarily satirical news.
+Opera/Chrome extension that tells the user when he or she visits a dubitable site (one that provides fake, misleading, or primarily satirical news) or a credible source.
+
+## Installation
+### Chrome
+Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Chrome/dubitable_v0_6.crx?raw=true)) into the page that appears.
+
+### Opera
+Go to Menu > Extension > Manage Extensions (Ctrl + Shift + E). Drage the latest. nex ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Opera/dubitable_v0_6.nex?raw=true)) into the page that appears.
 
 ## Version history
 ### v0.1: <br />
@@ -16,18 +23,17 @@ Added the 'D' Icon: <br />
   -Turns grey on new tab startpages <br />
 
 ## To-Do's: <br />
-* Create an icon
-  * One for non-dubitable sites, plus a red-background one for dubitable sites
-* Replace alert window with options window
-  * When icon is red (dubitable site visited), user can click it to open options window
+* Create a nicer icon
+* Update the popup
   * Options window will highlight color-coded dubitability categories and a summarizing title
   * User can click/hover to see explanation of each category
-* Figure out a way to pull new credible/dubitable domains list from opensources.co GitHub to keep our list synced
+* Update our list of credible/dubitable domains with regular fetches of OpenSources' latest lsit
 * Apply loose rules from the source material
   * e.g. provide a warning when domain ends in ".com.co"
 * Figure out how to get extension working on dubitable facebook pages
 
 ## Credits: <br />
-I took the list of dubitable sites and their classifications from Melissa Zimdars' PDF [here](https://d279m997dpfwgl.cloudfront.net/wp/2016/11/Resource-False-Misleading-Clickbait-y-and-Satirical-“News”-Sources-1.pdf).
+v0.1: I took the list of dubitable sites and their classifications from Melissa Zimdars' PDF [here](https://d279m997dpfwgl.cloudfront.net/wp/2016/11/Resource-False-Misleading-Clickbait-y-and-Satirical-“News”-Sources-1.pdf). <br />
+v0.6 and beyond: That data is now coming directly from OpenSources.co
 
 The extractDomain function was adapted from [this](https://stackoverflow.com/questions/8498592/extract-root-domain-name-from-string) stackoverflow page.
