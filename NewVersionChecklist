@@ -1,8 +1,10 @@
 1) Update manifest.json to new version number
 2) New .crx/.nex files
   -Update name to latest version
-  -Add files to repo & push
+  -Add files to repo
 3) Update README.md
   -Add version release notes
   -Update direct download links
   -Update TODO list
+4) Commit & Push
+  -Include latest version number in commit message
