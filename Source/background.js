@@ -61,10 +61,14 @@ function specialChecks(tabDomain, fullUrl) {
   }
 }
 
+function resetIconAndAlertString() {
+  alertString = "";
+  chrome.browserAction.setIcon({path: "icons/greenD.png"});
+}
+
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.hasOwnProperty('url')) {
-    alertString = "";
-    chrome.browserAction.setIcon({path: "icons/greenD.png"});
+    resetIconAndAlertString();
 
     //get domain from the tab's new URL
     var tabDomain = extractDomain(changeInfo.url);
@@ -76,6 +80,21 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
     // specialChecks(tabDomain, changeInfo.url);
   }
 });
+
+chrome.tabs.onCreated.addListener(function (tab) {
+  resetIconAndAlertString();
+  //no need to check the domain, since the URL may not be set yet
+});
+
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  chrome.tabs.get(activeInfo.tabId, function(tab) {
+    resetIconAndAlertString();
+    if (tab.hasOwnProperty('url')) {
+      var tabDomain = extractDomain(tab.url);
+      searchForTabUrlInDubitableDomains(tabDomain);
+    }
+  });
+})
 
 //pull the latest set of noncredible sources from OpenSources and save it in dubitableDomains
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
