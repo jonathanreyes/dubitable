@@ -11,7 +11,7 @@
     "storage"
   ],
   "browser_action": {
-    "default_icon": "icons/greenD.png",
+    "default_icon": "icons/greyD.png",
     "default_title": "dubitable",
     "default_popup": "popup.html"
   }
