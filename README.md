@@ -35,6 +35,9 @@ Setup an alarm to get lastest list of credible/dubitable domains from OpenSource
 * Apply loose rules from the source material
   * e.g. provide a warning when domain ends in ".com.co"
 * Figure out how to get extension working on dubitable facebook pages
+* Add extended descriptions for website tags in popup
+* Add form to popup that allows user to submit current site for review when site is untagged/yellow
+* Add OpenSources.co's badge to this README (lol)
 
 ## Credits: <br />
 v0.1: I took the list of dubitable sites and their classifications from Melissa Zimdars' PDF [here](https://d279m997dpfwgl.cloudfront.net/wp/2016/11/Resource-False-Misleading-Clickbait-y-and-Satirical-“News”-Sources-1.pdf). <br />
