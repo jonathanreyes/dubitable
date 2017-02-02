@@ -9,11 +9,9 @@ Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.c
 Go to Menu > Extension > Manage Extensions (Ctrl + Shift + E). Drage the latest. nex ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Opera/dubitable_v0_7.nex?raw=true)) into the page that appears.
 
 ## Version history
-### v0.1: <br />
-Baseline functionality. Creates an alert window with the site's associated categories and their explanations. "Database" is manually copied from source material (see Credits below).
-
-### v0.2: <br />
-Started to implement special searches for pages like the Borowitz Report
+### Latest Version: v0.7 <br />
+Code cleanup: got rid of storage permissions <br />
+Setup an alarm to get lastest list of credible/dubitable domains from OpenSources.co on startup and then every 24 hours <br />
 
 ### v0.6: <br />
 Added the 'D' Icon: <br />
@@ -22,10 +20,11 @@ Added the 'D' Icon: <br />
   -Turns yellow when page has not been categorized as credible or dubitable <br />
   -Turns grey on new tab startpages <br />
 
-### v0.7 <br />
-Code cleanup: got rid of storage permissions <br />
-Setup an alarm to get lastest list of credible/dubitable domains from OpenSources.co on startup and then every 24 hours <br />
+### v0.2: <br />
+Started to implement special searches for pages like the Borowitz Report
 
+### v0.1: <br />
+Baseline functionality. Creates an alert window with the site's associated categories and their explanations. "Database" is manually copied from source material (see Credits below).
 
 ## To-Do's: <br />
 * Create a nicer icon
