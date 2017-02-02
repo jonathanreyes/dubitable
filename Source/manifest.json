@@ -8,7 +8,7 @@
   },
   "permissions": [
     "tabs",
-    "storage"
+    "alarms"
   ],
   "browser_action": {
     "default_icon": "icons/greyD.png",
