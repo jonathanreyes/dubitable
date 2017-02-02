@@ -3,10 +3,10 @@ Opera/Chrome extension that tells the user when he or she visits a dubitable sit
 
 ## Installation
 ### Chrome
-Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Chrome/dubitable_v0_6.crx?raw=true)) into the page that appears.
+Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Chrome/dubitable_v0_7.crx?raw=true)) into the page that appears.
 
 ### Opera
-Go to Menu > Extension > Manage Extensions (Ctrl + Shift + E). Drage the latest. nex ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Opera/dubitable_v0_6.nex?raw=true)) into the page that appears.
+Go to Menu > Extension > Manage Extensions (Ctrl + Shift + E). Drage the latest. nex ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Opera/dubitable_v0_7.nex?raw=true)) into the page that appears.
 
 ## Version history
 ### v0.1: <br />
@@ -22,12 +22,16 @@ Added the 'D' Icon: <br />
   -Turns yellow when page has not been categorized as credible or dubitable <br />
   -Turns grey on new tab startpages <br />
 
+### v0.7 <br />
+Code cleanup: got rid of storage permissions <br />
+Setup an alarm to get lastest list of credible/dubitable domains from OpenSources.co on startup and then every 24 hours <br />
+
+
 ## To-Do's: <br />
 * Create a nicer icon
 * Update the popup
   * Options window will highlight color-coded dubitability categories and a summarizing title
   * User can click/hover to see explanation of each category
-* Update our list of credible/dubitable domains with regular fetches of OpenSources' latest lsit
 * Apply loose rules from the source material
   * e.g. provide a warning when domain ends in ".com.co"
 * Figure out how to get extension working on dubitable facebook pages
