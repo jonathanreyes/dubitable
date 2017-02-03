@@ -138,27 +138,6 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
      *when the URL of the current tab has updated*/
     resetIconAndAlertString(); 
     checkURLDubitableOrCredible(changeInfo.url);
-    // if (!changeInfo.url.includes(startpageURL)) {
-    //   checkURLDubitableOrCredible(changeInfo.url);
-      // //get domain from the tab's new URL
-      // var tabDomain = extractDomain(changeInfo.url);
-
-      // //check domain against list of dubitable domains
-      // var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
-
-      // if (!domainFoundInList) {
-      //   domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
-      // }
-
-      // ///TODO JSR: finish implementing special searches
-      // // specialChecks(tabDomain, changeInfo.url);
-
-      // if (!domainFoundInList) {
-      //   //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
-      //   chrome.browserAction.setIcon({path: yellowDPath});
-      //   alertString = untaggedAlertString;
-      // }
-    // }
   }
 });
 
@@ -176,26 +155,6 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 
     if (tab.hasOwnProperty('url')) {
       checkURLDubitableOrCredible(tab.url);
-      // if (!tab.url.includes(startpageURL)) {
-      //   //get domain from the tab's new URL
-      //   var tabDomain = extractDomain(tab.url);
-
-      //   //check domain against list of dubitable domains
-      //   var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
-
-      //   if (!domainFoundInList) {
-      //     domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
-      //   }
-
-      //   ///TODO JSR: finish implementing special searches
-      //   // specialChecks(tabDomain, changeInfo.url);
-
-      //   if (!domainFoundInList) {
-      //     //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
-      //     chrome.browserAction.setIcon({path: yellowDPath});
-      //     alertString = untaggedAlertString;
-      //   }
-      // }
     }
   });
 })
