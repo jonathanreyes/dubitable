@@ -194,35 +194,39 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
 Fetch credible and non-credible json objects from OpenSources.co's GitHub
 ******************************************************************************/
 //pull the latest set of noncredible sources from OpenSources and save it in dubitableDomains
+var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
-function fetchLatestNonCredibleSources() {
+
+function syncSources() {
   fetch(nonCredibleSourcesURL, {method: 'GET'})
   .then(function (response) {
     return response.json();
   }).then(function (j) {
-    dubitableDomains = j;
-    fetchLatestCredibleSources();
-  });
-}
+    //after we've fetched the dubitable domains, fetch the credible domains
+    fetch(credibleSourcesURL, {method: 'GET'})
+    .then(function (response2) {
+      return response2.json();
+    }).then(function (j2) {
+      //Once we've fetched both sets of domains, set the globals
+      dubitableDomains = j;
+      credibleDomains = j2;
 
-//pull the latest set of credible sources from OpenSources and save if in credibleDomains
-var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
-function fetchLatestCredibleSources() {
-  fetch(credibleSourcesURL, {method: 'GET'})
-  .then(function (response) {
-    return response.json();
-  }).then(function (j) {
-    credibleDomains = j;
-
-    //Update sync message
-    var currentDate = new Date();
-    lastSyncString = "Sources synced on "
-                      + monthToString(currentDate.getMonth() + 1) + " "
-                      + currentDate.getDate() + ", "
-                      + currentDate.getFullYear() + " at " 
-                      + currentDate.getHours() + ":"
-                      + currentDate.getMinutes() + ":"
-                      + currentDate.getSeconds();
+      //Update sync message
+      var currentDate = new Date();
+      lastSyncString = "Sources synced on "
+                        + monthToString(currentDate.getMonth() + 1) + " "
+                        + currentDate.getDate() + ", "
+                        + currentDate.getFullYear() + " at " 
+                        + currentDate.getHours() + ":"
+                        + currentDate.getMinutes() + ":"
+                        + currentDate.getSeconds();
+    }).catch(function(error2) {
+      lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
+      chrome.alarms.create('retrySourcesSync', {delayInMinutes: 5});
+    });
+  }).catch(function(error) {
+    lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
+    chrome.alarms.create('retrySourcesSync', {delayInMinutes: 5});
   });
 }
 
@@ -231,9 +235,9 @@ chrome.alarms.create('getLatestSourceLists', {when: Date.now(), periodInMinutes:
 //Whenever the alarm fires, get the latest sources lists from OpenSources.co
 chrome.alarms.onAlarm.addListener(function (alarm) {
   if (alarm.hasOwnProperty('name')) {
-    if (alarm['name'].includes('getLatestSourceLists')) {
-      fetchLatestNonCredibleSources();
-      // fetchLatestCredibleSources();
+    if (alarm['name'].includes('getLatestSourceLists')
+        || alarm['name'].includes('retrySourcesSync')) {
+      syncSources();
     }
   }
 });
