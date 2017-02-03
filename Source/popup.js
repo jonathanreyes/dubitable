@@ -3,5 +3,6 @@ chrome.runtime.sendMessage({request: "Handshake"}, function(response) {
 });
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  document.getElementById('alertParagraph').innerHTML = message.data;
+  document.getElementById('alertParagraph').innerHTML = message.alert;
+  document.getElementById('syncMessageParagraph').innerHTML = message.sync
 });

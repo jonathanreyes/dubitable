@@ -8,7 +8,8 @@ var dubitableDomains = new Object();
 var credibleDomains = new Object();
 var untaggedAlertString = "This site hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
 var alertString = "";
-var startpageURL = "chrome://startpage/";
+var startpageURL = "chrome://";
+var lastSyncString = "";
 
 //Paths for D Icons
 var greenDPath = "icons/greenD.png";
@@ -40,6 +41,24 @@ function extractDomain(url) {
 function resetIconAndAlertString() {
   alertString = "";
   chrome.browserAction.setIcon({path: greyDPath});
+}
+
+function monthToString(month) {
+  switch (month) {
+    case 1: return "January";
+    case 2: return "February";
+    case 3: return "March";
+    case 4: return "April";
+    case 5: return "May";
+    case 6: return "June";
+    case 7: return "July";
+    case 8: return "August";
+    case 9: return "September";
+    case 10: return "October";
+    case 11: return "November";
+    case 12: return "December";
+    default: return "";
+  }
 }
 
 /******************************************************************************
@@ -182,6 +201,7 @@ function fetchLatestNonCredibleSources() {
     return response.json();
   }).then(function (j) {
     dubitableDomains = j;
+    fetchLatestCredibleSources();
   });
 }
 
@@ -193,6 +213,16 @@ function fetchLatestCredibleSources() {
     return response.json();
   }).then(function (j) {
     credibleDomains = j;
+
+    //Update sync message
+    var currentDate = new Date();
+    lastSyncString = "Sources synced on "
+                      + monthToString(currentDate.getMonth() + 1) + " "
+                      + currentDate.getDate() + ", "
+                      + currentDate.getFullYear() + " at " 
+                      + currentDate.getHours() + ":"
+                      + currentDate.getMinutes() + ":"
+                      + currentDate.getSeconds();
   });
 }
 
@@ -203,7 +233,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
   if (alarm.hasOwnProperty('name')) {
     if (alarm['name'].includes('getLatestSourceLists')) {
       fetchLatestNonCredibleSources();
-      fetchLatestCredibleSources();
+      // fetchLatestCredibleSources();
     }
   }
 });
@@ -212,7 +242,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 Background-Popup Messaging
 ******************************************************************************/
 chrome.runtime.onMessage.addListener(function(message,sender, sendResponse) {
-  chrome.runtime.sendMessage({data: alertString}, function(response) {
+  chrome.runtime.sendMessage({alert: alertString, sync: lastSyncString}, function(response) {
     return;
   });
 });
