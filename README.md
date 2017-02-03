@@ -3,7 +3,8 @@ Opera/Chrome extension that tells the user when he or she visits a dubitable sit
 
 ## Installation
 ### Chrome
-Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Chrome/dubitable_v0_7.crx?raw=true)) into the page that appears.
+Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Chrome/dubitable_v0_7.crx?raw=true)) into the page that appears. <br />
+**Note: you will need to re-install if you close and then re-open Chrome, because the installation is not coming through the Chrome web store.*
 
 ### Opera
 Go to Menu > Extension > Manage Extensions (Ctrl + Shift + E). Drage the latest. nex ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Opera/dubitable_v0_7.nex?raw=true)) into the page that appears.
