@@ -95,14 +95,31 @@ function searchForTabUrlInCredibleDomains(tabDomain) {
 }
 
 function specialChecks(tabDomain, fullUrl) {
+  var specialChecksHit = false;
+
   //TODO JSR: provide warnings on facebook pages
-  if (tabDomain.includes("facebook.com")) {
-    ;
+  if (tabDomain.includes("facebook.com")
+      || tabDomain.includes("twitter.com")) {
+    chrome.browserAction.setIcon({path: redDPath});
+    alertString = "It's a good idea to double check anything you see on social media sites."
+    specialChecksHit = true;
   } else if (tabDomain.includes("newyorker.com")) {
     if (fullUrl.includes("borowitz-report")) {
-      buildDubitableAlert("The New Yorker's Borowitz Report", dubitableDomains["borowitz-report"]);
+      chrome.browserAction.setIcon({path: redDPath});
+      alertString = "The New Yorker's Borowitz Report is satirical.";
+      specialChecksHit = true;
     }
+  } else if (tabDomain.includes(".com.co")) {
+    chrome.browserAction.setIcon({path: redDPath});
+    alertString = "Be wary of domains ending with \'.com.co\'";
+    specialChecksHit = true;
+  } else if (tabDomain.includes("lo.")) {
+    chrome.browserAction.setIcon({path: redDPath});
+    alertString = "Be wary of domains ending with \'lo\'";
+    specialChecksHit = true;
   }
+
+  return specialChecksHit;
 }
 
 function checkURLDubitableOrCredible(currentTabURL) {
@@ -118,7 +135,7 @@ function checkURLDubitableOrCredible(currentTabURL) {
     }
 
     ///TODO JSR: finish implementing special searches
-    // specialChecks(tabDomain, changeInfo.url);
+    domainFoundInList = specialChecks(tabDomain, currentTabURL);
 
     if (!domainFoundInList) {
       //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
@@ -146,7 +163,6 @@ chrome.tabs.onCreated.addListener(function (tab) {
   //no need to check the domain, since the URL may not be set yet
 });
 
-//TODO JSR body of this and onUpdated listener can be abstracted into helper function?
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function(tab) {
     /*this is outside the if because an activated tab will always have the url property,
