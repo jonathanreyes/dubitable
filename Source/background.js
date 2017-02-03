@@ -197,6 +197,11 @@ Fetch credible and non-credible json objects from OpenSources.co's GitHub
 var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
 
+function handleSyncError(error) {
+  lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
+  chrome.alarms.create('retrySourcesSync', {delayInMinutes: 5});
+}
+
 function syncSources() {
   fetch(nonCredibleSourcesURL, {method: 'GET'})
   .then(function (response) {
@@ -221,12 +226,10 @@ function syncSources() {
                         + currentDate.getMinutes() + ":"
                         + currentDate.getSeconds();
     }).catch(function(error2) {
-      lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
-      chrome.alarms.create('retrySourcesSync', {delayInMinutes: 5});
+      handleSyncError(error2);
     });
   }).catch(function(error) {
-    lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
-    chrome.alarms.create('retrySourcesSync', {delayInMinutes: 5});
+    handleSyncError(error);
   });
 }
 
