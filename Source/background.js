@@ -105,34 +105,60 @@ function specialChecks(tabDomain, fullUrl) {
   }
 }
 
+function checkURLDubitableOrCredible(currentTabURL) {
+  if (!currentTabURL.includes(startpageURL)) {
+    //get domain from the tab's new URL
+    var tabDomain = extractDomain(currentTabURL);
+
+    //check domain against list of dubitable domains
+    var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
+
+    if (!domainFoundInList) {
+      domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
+    }
+
+    ///TODO JSR: finish implementing special searches
+    // specialChecks(tabDomain, changeInfo.url);
+
+    if (!domainFoundInList) {
+      //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
+      chrome.browserAction.setIcon({path: yellowDPath});
+      alertString = untaggedAlertString;
+    }
+  }
+}
+
 /******************************************************************************
 Tab Listeners
 /*****************************************************************************/
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
   if (changeInfo.hasOwnProperty('url')) {
-    resetIconAndAlertString();
+    /*this is inside the if because we only want to reset and re-check 
+     *when the URL of the current tab has updated*/
+    resetIconAndAlertString(); 
+    checkURLDubitableOrCredible(changeInfo.url);
+    // if (!changeInfo.url.includes(startpageURL)) {
+    //   checkURLDubitableOrCredible(changeInfo.url);
+      // //get domain from the tab's new URL
+      // var tabDomain = extractDomain(changeInfo.url);
 
-    if (!changeInfo.url.includes(startpageURL)) {
-      //get domain from the tab's new URL
-      var tabDomain = extractDomain(changeInfo.url);
+      // //check domain against list of dubitable domains
+      // var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
 
-      //check domain against list of dubitable domains
-      var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
+      // if (!domainFoundInList) {
+      //   domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
+      // }
 
-      if (!domainFoundInList) {
-        domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
-      }
+      // ///TODO JSR: finish implementing special searches
+      // // specialChecks(tabDomain, changeInfo.url);
 
-      ///TODO JSR: finish implementing special searches
-      // specialChecks(tabDomain, changeInfo.url);
-
-      if (!domainFoundInList) {
-        //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
-        chrome.browserAction.setIcon({path: yellowDPath});
-        alertString = untaggedAlertString;
-      }
-    }
+      // if (!domainFoundInList) {
+      //   //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
+      //   chrome.browserAction.setIcon({path: yellowDPath});
+      //   alertString = untaggedAlertString;
+      // }
+    // }
   }
 });
 
@@ -144,29 +170,32 @@ chrome.tabs.onCreated.addListener(function (tab) {
 //TODO JSR body of this and onUpdated listener can be abstracted into helper function?
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function(tab) {
-    resetIconAndAlertString();
+    /*this is outside the if because an activated tab will always have the url property,
+     *so we will always re-check the URL*/
+    resetIconAndAlertString(); 
 
     if (tab.hasOwnProperty('url')) {
-      if (!tab.url.includes(startpageURL)) {
-        //get domain from the tab's new URL
-        var tabDomain = extractDomain(tab.url);
+      checkURLDubitableOrCredible(tab.url);
+      // if (!tab.url.includes(startpageURL)) {
+      //   //get domain from the tab's new URL
+      //   var tabDomain = extractDomain(tab.url);
 
-        //check domain against list of dubitable domains
-        var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
+      //   //check domain against list of dubitable domains
+      //   var domainFoundInList = searchForTabUrlInDubitableDomains(tabDomain);
 
-        if (!domainFoundInList) {
-          domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
-        }
+      //   if (!domainFoundInList) {
+      //     domainFoundInList = searchForTabUrlInCredibleDomains(tabDomain);
+      //   }
 
-        ///TODO JSR: finish implementing special searches
-        // specialChecks(tabDomain, changeInfo.url);
+      //   ///TODO JSR: finish implementing special searches
+      //   // specialChecks(tabDomain, changeInfo.url);
 
-        if (!domainFoundInList) {
-          //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
-          chrome.browserAction.setIcon({path: yellowDPath});
-          alertString = untaggedAlertString;
-        }
-      }
+      //   if (!domainFoundInList) {
+      //     //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
+      //     chrome.browserAction.setIcon({path: yellowDPath});
+      //     alertString = untaggedAlertString;
+      //   }
+      // }
     }
   });
 })
