@@ -17,6 +17,9 @@ var yellowDPath = "icons/yellowD.png";
 var redDPath = "icons/redD.png";
 var greyDPath = "icons/greyD.png";
 
+//alarm names
+var retrySourcesSyncAlarmName = "retrySourcesSync";
+
 /******************************************************************************
 Utility Functions
 ******************************************************************************/
@@ -197,12 +200,12 @@ Fetch credible and non-credible json objects from OpenSources.co's GitHub
 var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
 
-function handleSyncError(error) {
+function handleSyncgError(error) {
   lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
-  chrome.alarms.create('retrySourcesSync', {delayInMinutes: 5});
+  chrome.alarms.create(retrySourcesSyncAlarmName, {delayInMinutes: 5});
 }
 
-function syncSources() {
+function syncSources(userRequestedRefresh) {
   fetch(nonCredibleSourcesURL, {method: 'GET'})
   .then(function (response) {
     return response.json();
@@ -225,6 +228,11 @@ function syncSources() {
                         + currentDate.getHours() + ":"
                         + currentDate.getMinutes() + ":"
                         + currentDate.getSeconds();
+
+      //if we sync'd because of a user request (button press), update popup text
+      if (userRequestedRefresh) {
+          chrome.runtime.sendMessage({sync: lastSyncString}, function(response) {return; });
+      }
     }).catch(function(error2) {
       handleSyncError(error2);
     });
@@ -239,8 +247,8 @@ chrome.alarms.create('getLatestSourceLists', {when: Date.now(), periodInMinutes:
 chrome.alarms.onAlarm.addListener(function (alarm) {
   if (alarm.hasOwnProperty('name')) {
     if (alarm['name'].includes('getLatestSourceLists')
-        || alarm['name'].includes('retrySourcesSync')) {
-      syncSources();
+        || alarm['name'].includes(retrySourcesSyncAlarmName)) {
+      syncSources(false);
     }
   }
 });
@@ -248,9 +256,15 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 /******************************************************************************
 Background-Popup Messaging
 ******************************************************************************/
-chrome.runtime.onMessage.addListener(function(message,sender, sendResponse) {
-  chrome.runtime.sendMessage({alert: alertString, sync: lastSyncString}, function(response) {
-    return;
-  });
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+  if (message.hasOwnProperty("request") && message['request'] === "syncNow") {
+    //if we get a request to sync sources now, first clear any retry alarms that may be set
+    chrome.alarms.clear(retrySourcesSyncAlarmName);
+
+    //then, sync sources now
+    syncSources(true);
+  }
+
+  chrome.runtime.sendMessage({alert: alertString, sync: lastSyncString}, function(response) {return; });
 });
 
