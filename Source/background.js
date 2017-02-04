@@ -10,7 +10,7 @@ var credibleDomains = new Object();
 //When we pass this object to the popup, it will update its alerts portion
 var alertStatusObject = {
   domain: "",
-  tags: []
+  tags: ["none"]
 }
 
 //When we pass this object to the popu, it will update its sync portion
@@ -18,7 +18,7 @@ var syncStatusObject = {
   success: false,
   syncResultString: ""
 }
-var untaggedAlertString = "This site hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
+// var untaggedAlertString = "This site hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
 var startpageURL = "chrome://";
 // var lastSyncString = "";
 
@@ -54,7 +54,7 @@ function extractDomain(url) {
 
 function resetIconAndAlertString() {
   alertStatusObject["domain"] = "";
-  alertStatusObject["tags"] = [];
+  alertStatusObject["tags"] = "untagged";
   chrome.browserAction.setIcon({path: greyDPath});
 }
 
@@ -173,7 +173,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         // alertString = untaggedAlertString;
 
         alertStatusObject["domain"] = "";
-        alertStatusObject["tags"] = "untagged";
+        alertStatusObject["tags"] = ["untagged"];
       }
     }
   }
@@ -225,7 +225,9 @@ var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opens
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
 
 function handleSyncError(error) {
-  lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
+  // lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
+  syncStatusObject["success"] = false;
+  syncStatusObject["syncResultString"] = "";
   chrome.alarms.create(retrySourcesSyncAlarmName, {delayInMinutes: 5});
 }
 
@@ -266,7 +268,7 @@ function syncSources(userRequestedRefresh) {
 
       //if we sync'd because of a user request (button press), update popup text
       if (userRequestedRefresh) {
-          chrome.runtime.sendMessage(syncStatusObject, function(response) {return; });
+          chrome.runtime.sendMessage({sync: syncStatusObject}, function(response) {return; });
       }
     }).catch(function(error2) {
       handleSyncError(error2);
@@ -300,6 +302,6 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     syncSources(true);
   }
 
-  chrome.runtime.sendMessage({alert: alertString, sync: lastSyncString}, function(response) {return; });
+  chrome.runtime.sendMessage({alert: alertStatusObject, sync: syncStatusObject}, function(response) {return; });
 });
 

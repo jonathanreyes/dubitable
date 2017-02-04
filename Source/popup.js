@@ -50,6 +50,8 @@
 //   }
 // };
 
+var untaggedString = " hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
+
 //once the popup opens, ping the background script
 chrome.runtime.sendMessage({request: "Handshake"}, function(response) {
   return;
@@ -58,11 +60,33 @@ chrome.runtime.sendMessage({request: "Handshake"}, function(response) {
 //Background replies to the ping with the alert and/or sync messages; display them
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.hasOwnProperty("alert")) {
-    document.getElementById('alertParagraph').innerHTML = message.alert;
+    if (message.alert.tags[0].includes("untagged")) {
+      document.getElementById('alertParagraph').innerHTML = message.alert.domain + untaggedString;
+    } else if (message.alert.tags[0].includes("none")) {
+      document.getElementById('alertParagraph').innerHTML = "";
+    } else {
+      document.getElementById('alertParagraph').innerHTML = message.alert.domain + " has been tagged as:";
+
+      for (tag in message.alert.tags) {
+        var tagRow = document.getElementById(tag);
+
+        if (tagRow) {
+          if (tag.includes("credible")) {
+            tagRow.style.color = "green";
+          } else {
+            tagRow.style.color = "red";
+          }
+        }
+      }
+    }
   }
 
   if (message.hasOwnProperty("sync")) {
-    document.getElementById('syncMessageParagraph').innerHTML = message.sync
+    if (message.sync.success) {
+      document.getElementById('syncMessageParagraph').innerHTML = message.sync;
+    } else {
+      document.getElementById('syncMessageParagraph').innerHTML = "Last sync attempt failed, trying again in 5 minutes";
+    }
   }
 });
 
