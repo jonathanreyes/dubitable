@@ -38,6 +38,7 @@ Baseline functionality. Creates an alert window with the site's associated categ
 * Add extended descriptions for website tags in popup
 * Add form to popup that allows user to submit current site for review when site is untagged/yellow
 * Add OpenSources.co's badge to this README (lol)
+* Code cleanup: add file header comments
 
 ## Credits: <br />
 v0.1: I took the list of dubitable sites and their classifications from Melissa Zimdars' PDF [here](https://d279m997dpfwgl.cloudfront.net/wp/2016/11/Resource-False-Misleading-Clickbait-y-and-Satirical-“News”-Sources-1.pdf). <br />
