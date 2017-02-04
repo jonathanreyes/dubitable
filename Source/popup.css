@@ -1,3 +1,17 @@
-#tagsTable > td {
-  bgcolor: grey;
+table, th, td {
+  border: 0px solid black;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: black;
+  color: white;
+}
+
+#tagsTable tr {
+  color: lightgrey;
+}
+
+#tagsTable tr:nth-child(even) {
+  background-color: #f2f2f2
 }

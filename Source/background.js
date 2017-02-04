@@ -6,10 +6,21 @@ Global Variables
 //categories are integers from 1 to 4
 var dubitableDomains = new Object();
 var credibleDomains = new Object();
+
+//When we pass this object to the popup, it will update its alerts portion
+var alertStatusObject = {
+  domain: "",
+  tags: []
+}
+
+//When we pass this object to the popu, it will update its sync portion
+var syncStatusObject = {
+  success: false,
+  syncResultString: ""
+}
 var untaggedAlertString = "This site hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
-var alertString = "";
 var startpageURL = "chrome://";
-var lastSyncString = "";
+// var lastSyncString = "";
 
 //Paths for D Icons
 var greenDPath = "icons/greenD.png";
@@ -42,7 +53,8 @@ function extractDomain(url) {
 }
 
 function resetIconAndAlertString() {
-  alertString = "";
+  alertStatusObject["domain"] = "";
+  alertStatusObject["tags"] = [];
   chrome.browserAction.setIcon({path: greyDPath});
 }
 
@@ -69,16 +81,22 @@ String Builders
 ******************************************************************************/
 
 function buildDubitableAlert(domain) {
-  alertString = domain + " is dubitable!\n";
-  alertString += "This domain has been tagged as " + dubitableDomains[domain]["type"] + ".\n";
+  // alertString = domain + " is dubitable!\n";
+  // alertString += "This domain has been tagged as " + dubitableDomains[domain]["type"] + ".\n";
 
-  if (dubitableDomains[domain]["notes"].length > 0) {
-    alertString += "Notes: " + dubitableDomains[domain]["notes"];
-  }
+  // if (dubitableDomains[domain]["notes"].length > 0) {
+  //   alertString += "Notes: " + dubitableDomains[domain]["notes"];
+  // }
+
+  alertStatusObject["domain"] = domain;
+  alertStatusObject["tags"] = dubitableDomains[domain]["type"];
 }
 
 function buildCredibleAlert(domain) {
-  alertString = domain + " is a credible source.";
+  // alertString = domain + " is a credible source.";
+
+  alertStatusObject["domain"] = domain;
+  alertStatusObject["tags"] = ["credible"];
 }
 
 /******************************************************************************
@@ -152,7 +170,10 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       if (!domainFoundInList) {
         //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
         chrome.browserAction.setIcon({path: yellowDPath});
-        alertString = untaggedAlertString;
+        // alertString = untaggedAlertString;
+
+        alertStatusObject["domain"] = "";
+        alertStatusObject["tags"] = "untagged";
       }
     }
   }
@@ -186,7 +207,10 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
         if (!domainFoundInList) {
           //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
           chrome.browserAction.setIcon({path: yellowDPath});
-          alertString = untaggedAlertString;
+          // alertString = untaggedAlertString;
+
+          alertStatusObject["domain"] = "";
+          alertStatusObject["tags"] = "untagged";
         }
       }
     }
@@ -200,7 +224,7 @@ Fetch credible and non-credible json objects from OpenSources.co's GitHub
 var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
 
-function handleSyncgError(error) {
+function handleSyncError(error) {
   lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
   chrome.alarms.create(retrySourcesSyncAlarmName, {delayInMinutes: 5});
 }
@@ -221,17 +245,28 @@ function syncSources(userRequestedRefresh) {
 
       //Update sync message
       var currentDate = new Date();
-      lastSyncString = "Sources synced on "
+      var lastSyncString = "Sources synced on "
                         + monthToString(currentDate.getMonth() + 1) + " "
                         + currentDate.getDate() + ", "
                         + currentDate.getFullYear() + " at " 
-                        + currentDate.getHours() + ":"
-                        + currentDate.getMinutes() + ":"
-                        + currentDate.getSeconds();
+                        + currentDate.getHours() + ":";
+
+      if (currentDate.getMinutes() < 10) {
+        lastSyncString += "0";
+      }
+      lastSyncString += currentDate.getMinutes() + ":";
+
+      if (currentDate.getSeconds() < 10) {
+        lastSyncString += "0";
+      }
+      lastSyncString += currentDate.getSeconds();
+
+      syncStatusObject["success"] = true;
+      syncStatusObject["syncResultString"] = lastSyncString;
 
       //if we sync'd because of a user request (button press), update popup text
       if (userRequestedRefresh) {
-          chrome.runtime.sendMessage({sync: lastSyncString}, function(response) {return; });
+          chrome.runtime.sendMessage(syncStatusObject, function(response) {return; });
       }
     }).catch(function(error2) {
       handleSyncError(error2);
