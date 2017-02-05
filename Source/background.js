@@ -15,7 +15,7 @@ var alertStatusObject = {
 //When we pass this object to the popu, it will update its sync portion
 var syncStatusObject = {
   success: false,
-  syncResultString: ""
+  syncTimeString: ""
 }
 
 //Paths for D Icons
@@ -235,7 +235,7 @@ var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/op
 
 function handleSyncError(error, dateAndTime) {
   syncStatusObject.success = false;
-  syncStatusObject.syncResultString = dateAndTimeTostring(dateAndTime);
+  syncStatusObject.syncTimeString = dateAndTimeTostring(dateAndTime);
 
   //TODO JSR: change icon to indicate failed sync
 
@@ -261,7 +261,7 @@ function syncSources(userRequestedRefresh) {
       var currentDate = new Date();
 
       syncStatusObject["success"] = true;
-      syncStatusObject["syncResultString"] = dateAndTimeTostring(currentDate);
+      syncStatusObject["syncTimeString"] = dateAndTimeTostring(currentDate);
 
       //if we sync'd because of a user request (button press), update popup text
       if (userRequestedRefresh) {
