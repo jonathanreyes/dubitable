@@ -60,22 +60,25 @@ chrome.runtime.sendMessage({request: "Handshake"}, function(response) {
 //Background replies to the ping with the alert and/or sync messages; display them
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.hasOwnProperty("alert")) {
-    if (message.alert.tags[0].includes("untagged")) {
+    if (message.alert.tag === "untagged") { //current page is untagged
       document.getElementById('alertParagraph').innerHTML = message.alert.domain + untaggedString;
-    } else if (message.alert.tags[0].includes("none")) {
+    } else if (message.alert.tag === "none") { //current page is a start page (no URL)
       document.getElementById('alertParagraph').innerHTML = "";
-    } else {
-      document.getElementById('alertParagraph').innerHTML = message.alert.domain + " has been tagged as:";
+    } else if (message.alert.tag === "credible") { //current page is credible
+      var credibleRow = document.getElementById(message.alert.tag);
+      // credibleRow.style.bgcolor = "green";
+      // credibleRow.style.color = "white";
+      credibleRow.style.color = "green";
+    } else { //current page is dubitable
+      document.getElementById('alertParagraph').innerHTML = message.alert.domain + " is dubitable! It has has been tagged as:";
 
-      for (tag in message.alert.tags) {
-        var tagRow = document.getElementById(tag);
+      for (idx in message.alert.tag) {
+        var tagRow = document.getElementById(message.alert.tag);
 
         if (tagRow) {
-          if (tag.includes("credible")) {
-            tagRow.style.color = "green";
-          } else {
-            tagRow.style.color = "red";
-          }
+          // tagRow.style.bgcolor = "red";
+          // tagRow.style.color = "white";
+          tagRow.style.color = "red";
         }
       }
     }
@@ -83,7 +86,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   if (message.hasOwnProperty("sync")) {
     if (message.sync.success) {
-      document.getElementById('syncMessageParagraph').innerHTML = message.sync;
+      document.getElementById('syncMessageParagraph').innerHTML = message.sync.syncResultString;
     } else {
       document.getElementById('syncMessageParagraph').innerHTML = "Last sync attempt failed, trying again in 5 minutes";
     }

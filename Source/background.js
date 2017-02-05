@@ -1,16 +1,15 @@
 /******************************************************************************
 Global Variables
 ******************************************************************************/
-//dubitableDomains is a map of domains to categories
-//domains must be all lower case!
-//categories are integers from 1 to 4
 var dubitableDomains = new Object();
 var credibleDomains = new Object();
+var startpageURL = "chrome://";
 
 //When we pass this object to the popup, it will update its alerts portion
 var alertStatusObject = {
   domain: "",
-  tags: ["none"]
+  tag: "none"
+  //TODO JSR: handle when domain has a note
 }
 
 //When we pass this object to the popu, it will update its sync portion
@@ -18,9 +17,6 @@ var syncStatusObject = {
   success: false,
   syncResultString: ""
 }
-// var untaggedAlertString = "This site hasn't been tagged, but you should nonetheless be vigilant of dubitable information.";
-var startpageURL = "chrome://";
-// var lastSyncString = "";
 
 //Paths for D Icons
 var greenDPath = "icons/greenD.png";
@@ -53,8 +49,8 @@ function extractDomain(url) {
 }
 
 function resetIconAndAlertString() {
-  alertStatusObject["domain"] = "";
-  alertStatusObject["tags"] = "untagged";
+  alertStatusObject.domain = "";
+  alertStatusObject.tag = "untagged";
   chrome.browserAction.setIcon({path: greyDPath});
 }
 
@@ -88,15 +84,15 @@ function buildDubitableAlert(domain) {
   //   alertString += "Notes: " + dubitableDomains[domain]["notes"];
   // }
 
-  alertStatusObject["domain"] = domain;
-  alertStatusObject["tags"] = dubitableDomains[domain]["type"];
+  alertStatusObject.domain = domain;
+  alertStatusObject.tag = dubitableDomains[domain]["type"];
 }
 
 function buildCredibleAlert(domain) {
   // alertString = domain + " is a credible source.";
 
-  alertStatusObject["domain"] = domain;
-  alertStatusObject["tags"] = ["credible"];
+  alertStatusObject.domain = domain;
+  alertStatusObject.tag = "credible";
 }
 
 /******************************************************************************
@@ -167,13 +163,14 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
       ///TODO JSR: finish implementing special searches
       // specialChecks(tabDomain, changeInfo.url);
 
+      //this tab is open to a domain not tagged as either credible or 
+      //dubitable, so tell user to proceed with caution
       if (!domainFoundInList) {
-        //this tab is open to a domain not tagged as either credible or dubitable, tell user to proceed with caution
         chrome.browserAction.setIcon({path: yellowDPath});
         // alertString = untaggedAlertString;
 
-        alertStatusObject["domain"] = "";
-        alertStatusObject["tags"] = ["untagged"];
+        alertStatusObject.domain = "";
+        alertStatusObject.tag = "untagged";
       }
     }
   }
@@ -209,8 +206,8 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
           chrome.browserAction.setIcon({path: yellowDPath});
           // alertString = untaggedAlertString;
 
-          alertStatusObject["domain"] = "";
-          alertStatusObject["tags"] = "untagged";
+          alertStatusObject.domain = "";
+          alertStatusObject.tag = "untagged";
         }
       }
     }
@@ -226,8 +223,13 @@ var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/op
 
 function handleSyncError(error) {
   // lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
-  syncStatusObject["success"] = false;
-  syncStatusObject["syncResultString"] = "";
+  //tell the popup that the sync failed
+  syncStatusObject.success = false;
+  syncStatusObject.syncResultString = "";
+
+  //TODO JSR: change icon to indicate failed sync
+
+  //set an alarm to try the sync again in 5 minutes
   chrome.alarms.create(retrySourcesSyncAlarmName, {delayInMinutes: 5});
 }
 
@@ -245,7 +247,7 @@ function syncSources(userRequestedRefresh) {
       dubitableDomains = j;
       credibleDomains = j2;
 
-      //Update sync message
+      //Update sync message with current time
       var currentDate = new Date();
       var lastSyncString = "Sources synced on "
                         + monthToString(currentDate.getMonth() + 1) + " "
@@ -253,11 +255,13 @@ function syncSources(userRequestedRefresh) {
                         + currentDate.getFullYear() + " at " 
                         + currentDate.getHours() + ":";
 
+      //format minutes
       if (currentDate.getMinutes() < 10) {
         lastSyncString += "0";
       }
       lastSyncString += currentDate.getMinutes() + ":";
 
+      //format seconds
       if (currentDate.getSeconds() < 10) {
         lastSyncString += "0";
       }
@@ -280,7 +284,9 @@ function syncSources(userRequestedRefresh) {
 
 //create an alarm that will fire immediately on install, then again every 24 hours
 chrome.alarms.create('getLatestSourceLists', {when: Date.now(), periodInMinutes: 1440});
+
 //Whenever the alarm fires, get the latest sources lists from OpenSources.co
+//(alarm will either be the 24 hour automatic or the 5 minute sync retry)
 chrome.alarms.onAlarm.addListener(function (alarm) {
   if (alarm.hasOwnProperty('name')) {
     if (alarm['name'].includes('getLatestSourceLists')
@@ -302,6 +308,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     syncSources(true);
   }
 
+  //the popup will send us a handshake everytime it opens
+  //always respond with status of current page (alert) and latest sync
   chrome.runtime.sendMessage({alert: alertStatusObject, sync: syncStatusObject}, function(response) {return; });
 });
 
