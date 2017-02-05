@@ -73,22 +73,22 @@ function monthToString(month) {
 }
 
 function dateAndTimeTostring(date) {
-  var s = monthToString(currentDate.getMonth() + 1) + " "
-          + currentDate.getDate() + ", "
-          + currentDate.getFullYear() + " at " 
-          + currentDate.getHours() + ":";
+  var s = monthToString(date.getMonth() + 1) + " "
+          + date.getDate() + ", "
+          + date.getFullYear() + " at " 
+          + date.getHours() + ":";
 
   //format minutes
-  if (currentDate.getMinutes() < 10) {
+  if (date.getMinutes() < 10) {
     s += "0";
   }
-  s += currentDate.getMinutes() + ":";
+  s += date.getMinutes() + ":";
 
   //format seconds
-  if (currentDate.getSeconds() < 10) {
+  if (date.getSeconds() < 10) {
     s += "0";
   }
-  s += currentDate.getSeconds();
+  s += date.getSeconds();
 
   return s;
 }
@@ -98,8 +98,9 @@ String Builders
 ******************************************************************************/
 
 function setDubitableAlert(domain) {
+  console.log(domain);
   alertStatusObject.domain = domain;
-  alertStatusObject.tag = dubitableDomains.domain.type;
+  alertStatusObject.tag = dubitableDomains[domain].type;
 }
 
 function setCredibleAlert(domain) {
@@ -134,7 +135,7 @@ function searchForTabUrlInCredibleDomains(tabDomain) {
     if (tabDomainIsCredible == false && tabDomain.includes(credibleDomains[domain]["url"].toLowerCase())) {
       //this tab is open to a credible domain, alert the user
       chrome.browserAction.setIcon({path: greenDPath});
-      setCredibleAlert(credibleDomains[domain]["url"]);
+      setCredibleAlert(credibleDomains.domain.url);
       tabDomainIsCredible = true;
     }
   }
@@ -260,8 +261,8 @@ function syncSources(userRequestedRefresh) {
       //Update syncStatusObject with time of successful sync
       var currentDate = new Date();
 
-      syncStatusObject["success"] = true;
-      syncStatusObject["syncTimeString"] = dateAndTimeTostring(currentDate);
+      syncStatusObject.success = true;
+      syncStatusObject.syncTimeString = dateAndTimeTostring(currentDate);
 
       //if we sync'd because of a user request (button press), update popup text
       if (userRequestedRefresh) {
