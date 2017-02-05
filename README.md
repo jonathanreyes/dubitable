@@ -10,7 +10,16 @@ Go to Window > Extensions.  Drag the latest .crx ([direct link](https://github.c
 Go to Menu > Extension > Manage Extensions (Ctrl + Shift + E). Drage the latest. nex ([direct link](https://github.com/jonathanreyes/dubitable/blob/master/Opera/dubitable_v0_7.nex?raw=true)) into the page that appears.
 
 ## Version history
-### Latest Version: v0.7 <br />
+### Latest Version: v0.8 <br />
+Updated syncing: <br />
+  -Added message to popup to tell user when the last successful sync was <br />
+  -Added button to allow user to request immediate sync <br />
+  -Automatic syncing attempts occur on installation and every 24 hours thereafter <br />
+  -On failed sync, automatic retry 5 minutes after failure <br />
+Added the tags table to the popup <br />
+Rewrote how background<->popup messaging <br />
+
+### v0.7 <br />
 Code cleanup: got rid of storage permissions <br />
 Setup an alarm to get lastest list of credible/dubitable domains from OpenSources.co on startup and then every 24 hours <br />
 
