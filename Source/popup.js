@@ -65,6 +65,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     } else if (message.alert.tag === "none") { //current page is a start page (no URL)
       document.getElementById('alertParagraph').innerHTML = "";
     } else if (message.alert.tag === "credible") { //current page is credible
+      document.getElementById('alertParagraph').innerHTML = message.alert.domain + " is a credible source."
       var credibleRow = document.getElementById(message.alert.tag);
       // credibleRow.style.bgcolor = "green";
       // credibleRow.style.color = "white";

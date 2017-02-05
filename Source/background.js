@@ -76,21 +76,12 @@ function monthToString(month) {
 String Builders
 ******************************************************************************/
 
-function buildDubitableAlert(domain) {
-  // alertString = domain + " is dubitable!\n";
-  // alertString += "This domain has been tagged as " + dubitableDomains[domain]["type"] + ".\n";
-
-  // if (dubitableDomains[domain]["notes"].length > 0) {
-  //   alertString += "Notes: " + dubitableDomains[domain]["notes"];
-  // }
-
+function setDubitableAlert(domain) {
   alertStatusObject.domain = domain;
-  alertStatusObject.tag = dubitableDomains[domain]["type"];
+  alertStatusObject.tag = dubitableDomains.domain.type;
 }
 
-function buildCredibleAlert(domain) {
-  // alertString = domain + " is a credible source.";
-
+function setCredibleAlert(domain) {
   alertStatusObject.domain = domain;
   alertStatusObject.tag = "credible";
 }
@@ -106,7 +97,7 @@ function searchForTabUrlInDubitableDomains(tabDomain) {
     if (tabDomainIsDubitable == false && tabDomain.includes(domain.toLowerCase())) {
       //this tab is open to a dubitable domain, alert the user
       chrome.browserAction.setIcon({path: redDPath});
-      buildDubitableAlert(domain);
+      setDubitableAlert(domain);
       tabDomainIsDubitable = true;
     }
   }
@@ -122,7 +113,7 @@ function searchForTabUrlInCredibleDomains(tabDomain) {
     if (tabDomainIsCredible == false && tabDomain.includes(credibleDomains[domain]["url"].toLowerCase())) {
       //this tab is open to a credible domain, alert the user
       chrome.browserAction.setIcon({path: greenDPath});
-      buildCredibleAlert(credibleDomains[domain]["url"]);
+      setCredibleAlert(credibleDomains[domain]["url"]);
       tabDomainIsCredible = true;
     }
   }
@@ -136,7 +127,7 @@ function specialChecks(tabDomain, fullUrl) {
     ;
   } else if (tabDomain.includes("newyorker.com")) {
     if (fullUrl.includes("borowitz-report")) {
-      buildDubitableAlert("The New Yorker's Borowitz Report", dubitableDomains["borowitz-report"]);
+      setDubitableAlert("The New Yorker's Borowitz Report");
     }
   }
 }
@@ -169,7 +160,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         chrome.browserAction.setIcon({path: yellowDPath});
         // alertString = untaggedAlertString;
 
-        alertStatusObject.domain = "";
+        alertStatusObject.domain = tabDomain;
         alertStatusObject.tag = "untagged";
       }
     }
@@ -206,7 +197,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) {
           chrome.browserAction.setIcon({path: yellowDPath});
           // alertString = untaggedAlertString;
 
-          alertStatusObject.domain = "";
+          alertStatusObject.domain = tabDomain;
           alertStatusObject.tag = "untagged";
         }
       }
