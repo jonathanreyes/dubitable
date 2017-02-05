@@ -35,9 +35,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
   if (message.hasOwnProperty("sync")) {
     if (message.sync.success) {
-      document.getElementById('syncMessageParagraph').innerHTML = "Sources synced at " + message.sync.syncResultString;
+      document.getElementById('syncMessageParagraph').innerHTML = "Sources synced at " + message.sync.syncTimeString;
     } else {
-      document.getElementById('syncMessageParagraph').innerHTML = "Sources failed to sync at " + message.sync.syncResultString + ". Trying again in 5 minutes";
+      document.getElementById('syncMessageParagraph').innerHTML = "Sources failed to sync at " + message.sync.syncTimeString + ". Trying again in 5 minutes";
     }
   }
 });
