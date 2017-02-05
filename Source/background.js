@@ -72,6 +72,27 @@ function monthToString(month) {
   }
 }
 
+function dateAndTimeTostring(date) {
+  var s = monthToString(currentDate.getMonth() + 1) + " "
+          + currentDate.getDate() + ", "
+          + currentDate.getFullYear() + " at " 
+          + currentDate.getHours() + ":";
+
+  //format minutes
+  if (currentDate.getMinutes() < 10) {
+    s += "0";
+  }
+  s += currentDate.getMinutes() + ":";
+
+  //format seconds
+  if (currentDate.getSeconds() < 10) {
+    s += "0";
+  }
+  s += currentDate.getSeconds();
+
+  return s;
+}
+
 /******************************************************************************
 String Builders
 ******************************************************************************/
@@ -212,11 +233,9 @@ Fetch credible and non-credible json objects from OpenSources.co's GitHub
 var credibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/credible/credible.json";
 var nonCredibleSourcesURL = "https://raw.githubusercontent.com/BigMcLargeHuge/opensources/master/notCredible/notCredible.json"
 
-function handleSyncError(error) {
-  // lastSyncString = "Last Sync failed with error: " + error + ". \n Trying again in 5 minutes.";
-  //tell the popup that the sync failed
+function handleSyncError(error, dateAndTime) {
   syncStatusObject.success = false;
-  syncStatusObject.syncResultString = "";
+  syncStatusObject.syncResultString = dateAndTimeTostring(dateAndTime);
 
   //TODO JSR: change icon to indicate failed sync
 
@@ -238,38 +257,21 @@ function syncSources(userRequestedRefresh) {
       dubitableDomains = j;
       credibleDomains = j2;
 
-      //Update sync message with current time
+      //Update syncStatusObject with time of successful sync
       var currentDate = new Date();
-      var lastSyncString = "Sources synced on "
-                        + monthToString(currentDate.getMonth() + 1) + " "
-                        + currentDate.getDate() + ", "
-                        + currentDate.getFullYear() + " at " 
-                        + currentDate.getHours() + ":";
-
-      //format minutes
-      if (currentDate.getMinutes() < 10) {
-        lastSyncString += "0";
-      }
-      lastSyncString += currentDate.getMinutes() + ":";
-
-      //format seconds
-      if (currentDate.getSeconds() < 10) {
-        lastSyncString += "0";
-      }
-      lastSyncString += currentDate.getSeconds();
 
       syncStatusObject["success"] = true;
-      syncStatusObject["syncResultString"] = lastSyncString;
+      syncStatusObject["syncResultString"] = dateAndTimeTostring(currentDate);
 
       //if we sync'd because of a user request (button press), update popup text
       if (userRequestedRefresh) {
           chrome.runtime.sendMessage({sync: syncStatusObject}, function(response) {return; });
       }
     }).catch(function(error2) {
-      handleSyncError(error2);
+      handleSyncError(error2, new Date());
     });
   }).catch(function(error) {
-    handleSyncError(error);
+    handleSyncError(error, new Date());
   });
 }
 
